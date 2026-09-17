@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digital Investor Profiling System | 數位投資人風險畫像系統</title>
-    <!-- 引入 Chart.js 用於繪製雷達圖 -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -31,16 +30,16 @@
         header {
             text-align: center;
             margin-bottom: 30px;
-            padding: 20px;
+            padding: 25px;
             background-color: var(--primary-color);
             color: white;
-            border-radius: 10px;
+            border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         header h1 {
             margin: 0;
-            font-size: 28px;
+            font-size: 26px;
         }
 
         header p {
@@ -75,7 +74,7 @@
             color: var(--primary-color);
             border-bottom: 2px solid #e2e8f0;
             padding-bottom: 8px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
         }
@@ -94,56 +93,79 @@
         }
 
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             font-weight: 600;
             font-size: 14px;
+            line-height: 1.4;
         }
 
         select, input[type="text"], textarea {
             width: 100%;
-            padding: 10px;
+            padding: 10px 12px;
             border: 1px solid #cbd5e0;
             border-radius: 6px;
             box-sizing: border-box;
             font-size: 14px;
+            background-color: #fff;
         }
 
         textarea {
             resize: vertical;
-            height: 70px;
+            height: 80px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
         }
 
         .btn-submit {
-            width: 100%;
+            flex: 2;
             background-color: #2b6cb0;
             color: white;
             border: none;
             padding: 14px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.2s;
-            margin-top: 10px;
         }
 
         .btn-submit:hover {
             background-color: #2c5282;
         }
 
-        /* 結果顯示區 */
+        .btn-json {
+            flex: 1;
+            background-color: #4a5568;
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-json:hover {
+            background-color: #2d3748;
+        }
+
         .result-panel {
             display: none;
         }
 
         .profile-badge {
             text-align: center;
-            background: linear-gradient(135deg, #2b6cb0, #4299e1);
+            background: linear-gradient(135deg, #1a365d, #2b6cb0);
             color: white;
             padding: 20px;
             border-radius: 8px;
@@ -163,8 +185,24 @@
         .chart-container {
             position: relative;
             margin: auto;
-            height: 300px;
+            height: 320px;
             width: 100%;
+        }
+
+        .behavior-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .tag {
+            background-color: #edf2f7;
+            color: #4a5568;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
         }
 
         .advice-box {
@@ -174,6 +212,17 @@
             border-radius: 4px;
             font-size: 14px;
             margin-top: 15px;
+            line-height: 1.6;
+        }
+
+        pre {
+            background-color: #2d3748;
+            color: #f7fafc;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            overflow-x: auto;
+            max-height: 200px;
         }
     </style>
 </head>
@@ -182,113 +231,164 @@
 <div class="container">
     <header>
         <h1>Investor Risk Assessment System</h1>
-        <p>長庚大學 數位金融科技學系 — 數位投資人風險畫像系統</p>
+        <p>長庚大學 數位金融科技學系 — AI 輔助數位投資人風險畫像系統</p>
     </header>
 
     <div class="main-content">
-        <!-- 左側：問卷表單區 -->
         <div class="form-container">
             <form id="profilingForm">
                 
                 <!-- 1. 傳統風險評估 (Traditional Risk Profiling) -->
                 <div class="card">
-                    <div class="section-title"><span>1</span> 傳統風險評估 (Traditional Risk Profiling)</div>
+                    <div class="section-title"><span>1</span> Traditional Risk Profiling（傳統風險評估）</div>
                     
                     <div class="form-group">
-                        <label for="age">1. 年齡 (Age)</label>
-                        <select id="age" required>
-                            <option value="4">30 歲以下</option>
-                            <option value="3">31 - 45 歲</option>
-                            <option value="2">46 - 60 歲</option>
-                            <option value="1">60 歲以上</option>
+                        <label for="age">1.1 年齡階段 (Age)</label>
+                        <select id="age">
+                            <option value="4">30 歲以下 </option>
+                            <option value="3">31 - 45 歲 </option>
+                            <option value="2">46 - 60 歲 </option>
+                            <option value="1">60 歲以上 </option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="horizon">2. 投資期限 (Investment Horizon)</label>
-                        <select id="horizon" required>
-                            <option value="1">短期 (1 年以內)</option>
-                            <option value="2">中期 (1 - 5 年)</option>
+                        <label for="occupation">1.2 職業類別 (Occupation)</label>
+                        <select id="occupation">
+                            <option value="2">軍公教 / 公營事業 </option>
+                            <option value="3">一般企業上班族 / 技術人員 </option>
+                            <option value="4">專業人士(醫師/律師/工程師等) </option>
+                            <option value="2">自營商 / 企業主 </option>
+                            <option value="1">自由業 / 兼職 / 學生 / 無固定收入</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="isFirstTime">1.3 投資經驗 (First-time Investor)</label>
+                        <select id="isFirstTime">
+                            <option value="1">否，為新手（這是第一次進行投資）</option>
+                            <option value="2">否，有 1~3 年初步投資經驗</option>
+                            <option value="3">是，有 3~5 年經驗（熟悉股票/基金等工具）</option>
+                            <option value="4">是，為資深投資人（5 年以上，熟悉衍生性商品/槓桿）</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="horizon">1.4 預期投資期限 (Investment Horizon)</label>
+                        <select id="horizon">
+                            <option value="1">超短期 (1 年以內)</option>
+                            <option value="2">中期 (1 - 3 年)</option>
+                            <option value="3">中長期 (3 - 5 年)</option>
                             <option value="4">長期 (5 年以上)</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="riskTolerance">3. 風險偏好 (Risk Tolerance)</label>
-                        <select id="riskTolerance" required>
-                            <option value="1">追求資本保值，無法忍受虧損</option>
-                            <option value="2">追求穩定收益，可承受小幅波動</option>
-                            <option value="3">追求資本增長，可承受中等虧損</option>
-                            <option value="4">追求高回報，願意承受大幅虧損</option>
+                        <label for="financialGoal">1.5 主要投資目標 (Financial Goal)</label>
+                        <select id="financialGoal">
+                            <option value="1">資產保值 (抗通膨為主)</option>
+                            <option value="2">穩健增值 (創造穩定配息)</option>
+                            <option value="3">積極成長 (追求資產快速翻倍)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="riskTolerance">1.6 風險偏好與波動承受度 (Risk Tolerance)</label>
+                        <select id="riskTolerance">
+                            <option value="1">極度保守：無法承受任何本金虧損</option>
+                            <option value="2">穩健適中：可承受 5%~10% 的短期波動</option>
+                            <option value="3">積極進取：可承受 10%~20% 的短期波動</option>
+                            <option value="4">高風險高報酬：願意以高波動換取最大回報 (>20%)</option>
                         </select>
                     </div>
                 </div>
 
                 <!-- 2. 行為/情緒評估 (Behavioral & Emotional Assessment) -->
                 <div class="card">
-                    <div class="section-title"><span>2</span> 行為與情緒評估 (Behavioral & Emotional)</div>
+                    <div class="section-title"><span>2</span> Behavioral & Emotional Assessment（行為與情緒）</div>
                     
                     <div class="form-group">
-                        <label for="lossResponse">1. 如果您的投資組合一個月內下跌 20%，您會怎麼做？</label>
-                        <select id="lossResponse" required>
-                            <option value="1">立刻全數贖回/停損</option>
-                            <option value="2">觀望暫不處理</option>
-                            <option value="3">逢低加碼買進</option>
+                        <label for="lossResponse">2.1 壓力反應：若整體投資組合在一個月內無預警下跌 20%，您最可能？</label>
+                        <select id="lossResponse">
+                            <option value="1">極度焦慮，立刻全數停損出場</option>
+                            <option value="2">感到不安，減碼部分風險資產</option>
+                            <option value="3">保持冷靜，維持原投資計畫不動</option>
+                            <option value="4">視為買點，逢低加碼拉低成本</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="herdingText">2. 如果您的朋友靠熱門 AI 股票賺了 30%，而您的投資只有 5%，您會怎麼做？（開放式對話）</label>
-                        <textarea id="herdingText" placeholder="請簡述您的想法，系統將進行 Sentiment / Behavior Analysis..."></textarea>
+                        <label for="herdingText">2.2 從眾與情緒對話：若周遭朋友靠熱門 AI 股票賺了 30%，而您的持股幾乎沒漲，您會怎麼做？為什麼？</label>
+                        <textarea id="herdingText" placeholder="例如：我會感到焦慮並考慮賣掉手頭股票改買 AI 股；或者我會堅持自己的資產配置..."></textarea>
                     </div>
                 </div>
 
                 <!-- 3. 財務條件 (Financial Capacity) -->
                 <div class="card">
-                    <div class="section-title"><span>3</span> 財務條件 (Financial Capacity)</div>
+                    <div class="section-title"><span>3</span> Financial Capacity（財務條件與限制）</div>
                     
                     <div class="form-group">
-                        <label for="income">1. 收入與現金流狀況 (Income / Cash Flow)</label>
-                        <select id="income" required>
-                            <option value="1">不太穩定 / 收入有限</option>
-                            <option value="2">穩定但負擔重</option>
-                            <option value="3">穩定且有結餘</option>
-                            <option value="4">非常充裕</option>
+                        <label for="income">3.1 收入與現金流穩定度 (Income / Cash Flow)</label>
+                        <select id="income">
+                            <option value="1">不穩定且無固定收入</option>
+                            <option value="2">有固定收入但生活開銷龐大</option>
+                            <option value="3">收入穩定，每月均有固定結餘</option>
+                            <option value="4">現金流充裕，有高額淨被動收入</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="liquidity">2. 預期流動性需求 (Liquidity Need)</label>
-                        <select id="liquidity" required>
-                            <option value="1">高 (隨時可能需要提領大筆資金)</option>
-                            <option value="2">中 (1~2年內有購屋/消費支出)</option>
-                            <option value="3">低 (閒置資金，長期不用提取)</option>
+                        <label for="liquidity">3.2 未來 1-2 年的流動性需求 (Liquidity Need)</label>
+                        <select id="liquidity">
+                            <option value="1">高需求 (近期有購屋、結婚或創業等大額支出)</option>
+                            <option value="2">中需求 (預留一部份作為緊急預備金)</option>
+                            <option value="3">低需求 (均為長期閒置資金，多年內無需動用)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="liabilities">3.3 個人負債狀況 (Liabilities)</label>
+                        <select id="liabilities">
+                            <option value="1">高負債 (房貸/車貸/信貸佔總收入 40% 以上)</option>
+                            <option value="2">中負債 (負債佔總收入 20%~40%)</option>
+                            <option value="3">無負債或負債極低</option>
                         </select>
                     </div>
                 </div>
 
-                <button type="button" class="btn-submit" onclick="analyzeProfile()">Analyze My Profile</button>
+                <div class="btn-group">
+                    <button type="button" class="btn-submit" onclick="analyzeProfile()">Analyze My Profile</button>
+                    <button type="button" class="btn-json" onclick="exportJSON()">Export JSON 數據</button>
+                </div>
             </form>
         </div>
 
-        <!-- 右側：動態風險畫像與分析結果 -->
         <div class="result-container">
             <div id="resultPanel" class="card result-panel">
                 <div class="section-title">Dynamic Investor Risk Profile</div>
                 
                 <div class="profile-badge">
-                    <div class="score-display">風險綜合評分：<span id="totalScore">0</span> / 100</div>
+                    <div class="score-display">綜合風險能力分數：<span id="totalScore">0</span> / 100</div>
                     <h2 id="investorType">分析中...</h2>
                 </div>
 
-                <!-- 雷達圖呈現五大維度 -->
                 <div class="chart-container">
                     <canvas id="radarChart"></canvas>
                 </div>
 
+                <div style="margin-top: 15px;">
+                    <strong style="font-size: 14px;">🧠 行為/情緒警示標籤 (Behavioral Alerts)：</strong>
+                    <div class="behavior-tags" id="behaviorTags"></div>
+                </div>
+
                 <div class="advice-box">
                     <strong>🤖 AI 個人化投資建議：</strong>
-                    <p id="aiAdvice">請先填寫左側問卷並點擊 Analyze 分析。</p>
+                    <p id="aiAdvice" style="margin: 5px 0 0 0;"></p>
+                </div>
+
+                <div style="margin-top: 15px;">
+                    <strong style="font-size: 12px; color: #718096;">Machine-Readable Data Output:</strong>
+                    <pre id="jsonPreview">{}</pre>
                 </div>
             </div>
         </div>
@@ -298,47 +398,100 @@
 <script>
     let myRadarChart = null;
 
+    function getFormDataJSON() {
+        const occupationSelect = document.getElementById('occupation');
+        const experienceSelect = document.getElementById('isFirstTime');
+
+        return {
+            timestamp: new Date().toISOString(),
+            traditional_profiling: {
+                age_tier: parseInt(document.getElementById('age').value),
+                occupation: occupationSelect.options[occupationSelect.selectedIndex].text,
+                occupation_score: parseInt(occupationSelect.value),
+                experience_level: experienceSelect.options[experienceSelect.selectedIndex].text,
+                experience_score: parseInt(experienceSelect.value),
+                investment_horizon: parseInt(document.getElementById('horizon').value),
+                financial_goal: parseInt(document.getElementById('financialGoal').value),
+                risk_tolerance: parseInt(document.getElementById('riskTolerance').value)
+            },
+            behavioral_assessment: {
+                loss_response: parseInt(document.getElementById('lossResponse').value),
+                open_text_response: document.getElementById('herdingText').value
+            },
+            financial_capacity: {
+                income_stability: parseInt(document.getElementById('income').value),
+                liquidity_need: parseInt(document.getElementById('liquidity').value),
+                liability_level: parseInt(document.getElementById('liabilities').value)
+            }
+        };
+    }
+
     function analyzeProfile() {
-        // 1. 取得表單數值與計算維度分數 (轉換為 0~10 分的標準值)
-        const ageScore = parseInt(document.getElementById('age').value) * 2.5; // 2.5 ~ 10
-        const horizonScore = parseInt(document.getElementById('horizon').value) * 2.5; // 2.5 ~ 10
-        const riskToleranceScore = parseInt(document.getElementById('riskTolerance').value) * 2.5; // 2.5 ~ 10
-        const lossResponseScore = parseInt(document.getElementById('lossResponse').value) * 3.33; // 3.3 ~ 10
-        const incomeScore = parseInt(document.getElementById('income').value) * 2.5; // 2.5 ~ 10
-        const liquidityScore = parseInt(document.getElementById('liquidity').value) * 3.33; // 3.3 ~ 10
+        const rawData = getFormDataJSON();
 
-        // 計算雷達圖五大核心指標 (以 10 分為滿分)
-        const lossCapacity = (incomeScore + liquidityScore) / 2;      // 損失承受能力
-        const riskPreference = riskToleranceScore;                     // 風險偏好
-        const lossAversion = 10 - lossResponseScore;                  // 損失規避程度
-        const financialCapacity = (incomeScore + ageScore) / 2;       // 財務實力
-        const timeHorizon = horizonScore;                              // 投資期限
+        // 加入職業與經驗後的維度計算
+        const lossCapacity = ((rawData.financial_capacity.income_stability + rawData.financial_capacity.liquidity_need + rawData.financial_capacity.liability_level) / 10) * 10;
+        const riskPreference = ((rawData.traditional_profiling.risk_tolerance + rawData.traditional_profiling.experience_score) / 8) * 10;
+        const lossAversion = 10 - ((rawData.behavioral_assessment.loss_response / 4) * 10);
+        const financialCapacity = ((rawData.financial_capacity.income_stability + rawData.traditional_profiling.occupation_score + rawData.traditional_profiling.age_tier) / 12) * 10;
+        const timeHorizon = (rawData.traditional_profiling.investment_horizon / 4) * 10;
 
-        // 2. 計算綜合總分 (滿分 100)
         const totalScore = Math.round((lossCapacity + riskPreference + (10 - lossAversion) + financialCapacity + timeHorizon) * 2);
 
-        // 3. 判定 Investor Type (投資人類型)
         let type = "";
         let advice = "";
+        let tags = [];
 
-        if (totalScore < 40) {
+        if (totalScore < 45) {
             type = "Conservative (保守型)";
-            advice = "您的風險承受度較低，建議配置較高比例的高評級債券與貨幣市場基金，確保資產流動性與本金安全。";
-        } else if (totalScore < 70) {
+            advice = "您的整體風險承受度較低。建議以高評級債券、貨幣市場基金與定存為主，優先確保本金安全。";
+        } else if (totalScore < 75) {
             type = "Moderate (穩健型)";
-            advice = "您的財務與心理狀況維持平衡，建議採用股債平衡配置（例如 50% 股票 / 50% 債券 ETF），以達到資產穩健增長。";
+            advice = "您的財務狀況與心理承受度維持良好平衡。建議採用經典股債平衡策略（如 50% 全球股票 ETF / 50% 綜合債券 ETF）。";
         } else {
             type = "Aggressive (積極型)";
-            advice = "您具有較高風險承受力與長遠投資視野，適合配置較高比例的高成長股票、產業型 ETF 或新興市場資產。";
+            advice = "您具備較高風險承受力與長遠投資視野。適合配置較高比例的高成長股票、產業型 ETF（如科技/AI）或新興市場資產。";
         }
 
-        // 4. 更新 UI 畫面
+        // 新手提醒與情緒標籤
+        if (rawData.traditional_profiling.experience_score === 1) {
+            tags.push("🔰 首次/新手投資人 (Beginner)");
+        }
+        if (rawData.behavioral_assessment.loss_response === 1) {
+            tags.push("⚠️ 高度損失規避 (Loss Aversion)");
+        }
+        if (rawData.behavioral_assessment.open_text_response.includes("換") || rawData.behavioral_assessment.open_text_response.includes("追") || rawData.behavioral_assessment.open_text_response.includes("買")) {
+            tags.push("⚠️ 從眾傾向潛勢 (Herding Bias)");
+        }
+        if (tags.length === 0) tags.push("✅ 理性決策狀態 (Balanced State)");
+
+        // 更新 UI
         document.getElementById('totalScore').innerText = totalScore;
         document.getElementById('investorType').innerText = type;
         document.getElementById('aiAdvice').innerText = advice;
+        
+        const tagsContainer = document.getElementById('behaviorTags');
+        tagsContainer.innerHTML = tags.map(t => `<span class="tag">${t}</span>`).join('');
+
+        const finalOutputData = {
+            profile_summary: {
+                total_score: totalScore,
+                investor_type: type,
+                detected_tags: tags
+            },
+            radar_scores: {
+                loss_capacity: lossCapacity,
+                risk_preference: riskPreference,
+                loss_aversion: lossAversion,
+                financial_capacity: financialCapacity,
+                time_horizon: timeHorizon
+            },
+            raw_responses: rawData
+        };
+
+        document.getElementById('jsonPreview').innerText = JSON.stringify(finalOutputData, null, 2);
         document.getElementById('resultPanel').style.display = 'block';
 
-        // 5. 繪製 / 更新 Chart.js 雷達圖
         updateChart([lossCapacity, riskPreference, lossAversion, financialCapacity, timeHorizon]);
     }
 
@@ -346,25 +499,19 @@
         const ctx = document.getElementById('radarChart').getContext('2d');
 
         if (myRadarChart) {
-            myRadarChart.destroy(); // 避免重複渲染造成的重疊 Bug
+            myRadarChart.destroy();
         }
 
         myRadarChart = new Chart(ctx, {
             type: 'radar',
             data: {
-                labels: [
-                    '損失承受能力',
-                    '風險偏好',
-                    '損失規避度',
-                    '財務實力',
-                    '投資期限'
-                ],
+                labels: ['損失承受力', '風險偏好', '損失規避度', '財務實力', '投資期限'],
                 datasets: [{
-                    label: '個人風險指標 Profile',
+                    label: '個人風險畫像 (0-10)',
                     data: dataPoints,
-                    backgroundColor: 'rgba(43, 108, 176, 0.2)',
+                    backgroundColor: 'rgba(43, 108, 176, 0.25)',
                     borderColor: 'rgba(43, 108, 176, 1)',
-                    pointBackgroundColor: 'rgba(43, 108, 176, 1)',
+                    pointBackgroundColor: 'rgba(26, 54, 93, 1)',
                     borderWidth: 2
                 }]
             },
@@ -380,6 +527,16 @@
                 }
             }
         });
+    }
+
+    function exportJSON() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(document.getElementById('jsonPreview').innerText);
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", "investor_profile.json");
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
     }
 </script>
 
